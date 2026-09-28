@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phần Mềm Luyện Thi HSK 2 - Sinh Động & Tương Tác</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #a855f7;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --bg-gradient: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 100%);
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 750px;
+            background: var(--card-bg);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.15);
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        /* Màn hình bắt đầu */
+        .start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .start-screen p {
+            font-size: 16px;
+            color: #475569;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            background: #eef2ff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .question-box {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+        }
+
+        .option-item {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-size: 16px;
+        }
+
+        .option-item:hover {
+            background: #f1f5f9;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .option-item.correct {
+            background: #d1fae5 !important;
+            border-color: var(--success-color) !important;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .option-item.incorrect {
+            background: #fee2e2 !important;
+            border-color: var(--error-color) !important;
+            color: #991b1b;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s, transform 0.2s;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .quiz-screen, .result-screen {
+            display: none;
+        }
+
+        .result-screen {
+            text-align: center;
+        }
+
+        .result-screen h2 {
+            font-size: 28px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            font-weight: bold;
+            margin: 20px auto;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🌟 Luyện Thi HSK 2 Tương Tác 🌟</h1>
+        <p>Hệ thống ôn tập từ vựng, ngữ pháp và đọc hiểu chuẩn xác</p>
+    </header>
+
+    <!-- 1. Màn hình bắt đầu -->
+    <div id="start-screen" class="start-screen">
+        <p>Chào mừng bạn đến với hệ thống trắc nghiệm HSK 2! Mỗi lượt làm bài sẽ chọn ngẫu nhiên <strong>20 câu hỏi không trùng lặp</strong> từ ngân hàng câu hỏi tổng hợp. Hệ thống có tích hợp âm thanh phản hồi trực quan giúp bạn ghi nhớ tốt hơn.</p>
+        <button class="btn" onclick="startQuiz()">Bắt Đầu Làm Bài 🚀</button>
+    </div>
+
+    <!-- 2. Màn hình làm bài -->
+    <div id="quiz-screen" class="quiz-screen">
+        <div class="quiz-info">
+            <span id="question-tracker">Câu hỏi: 1 / 20</span>
+            <span id="score-tracker">Điểm: 0</span>
+        </div>
+        <div class="question-box" id="question-text">Đang tải câu hỏi...</div>
+        <ul class="options-list" id="options-container"></ul>
+        <button class="btn" id="next-btn" disabled>Vui lòng chọn đáp án</button>
+    </div>
+
+    <!-- 3. Màn hình kết quả -->
+    <div id="result-screen" class="result-screen">
+        <h2>Hoàn thành xuất sắc! 🎉</h2>
+        <p>Bạn đã hoàn thành lượt ôn tập 20 câu hỏi.</p>
+        <div class="score-circle" id="final-score">0/20</div>
+        <p id="result-message" style="font-size: 16px; margin-bottom: 25px; color: #475569;"></p>
+        <button class="btn" onclick="resetToStart()">Làm Lượt Mới (20 Câu Khác)</button>
+    </div>
+</div>
+
+<script>
+    // Tích hợp âm thanh phản hồi trực quan bằng Web Audio API
+    let audioCtx = null;
+    
+    function playSound(type) {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        if (type === 'correct') {
+            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nốt D5 vui tươi
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // Nốt A5
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        } else {
+            osc.frequency.setValueAtTime(220, audioCtx.currentTime); // Nốt trầm báo lỗi
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+    }
+
+    // Kho dữ liệu ngân hàng câu hỏi đầy đủ (đã sửa lỗi cú pháp)
+    const fullBank = [
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我觉得春天去岘港旅游最好，因为那个时候天气……", options: ["比较冷", "不冷也不热", "很热", "太冷了"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你最喜欢什么运动？——我最喜欢……", options: ["看书", "踢足球", "听音乐", "睡觉"], answer: 1},
+        {q: "Từ '起床' có nghĩa là gì？", options: ["Du lịch", "Cùng nhau", "Đi ngủ", "Thức dậy"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我们下午一起去健身……？——好啊！", options: ["吗", "呢", "吧", "啊"], answer: 2},
+        {q: "Bộ 'Túc-足' thường biểu thị ý nghĩa liên quan đến điều gì? ", options: ["Chân hoặc hành động của chân", "Tay hoặc hành động của tay", "Con mắt, ánh nhìn", "Nhiệt độ, sức nóng, lửa"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống：这些书......都很有意思。 ", options: ["个个", "本本", "只只", "张张"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你为什么很少生病？——因为我天天都……", options: ["睡觉", "吃药", "跑步", "买衣服"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你每天几点起床？——我每天早上六点……", options: ["起床", "准备", "出院", "休息"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我现在好多了，什么时候能……？——医生说三天后。", options: ["生病", "出院", "吃药", "跑步"], answer: 1},
+        {q: "Từ '快乐' có nghĩa là gì？", options: ["Phấn khích", "Hào hứng", "Buồn bã", "Vui vẻ"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 明天下午你有_______吗？——明天下午我要去学做中国菜了，怎么了？", options: ["身体", "报纸", "时间", "时候"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 旁边那个同学今年多大？——二十……岁。", options: ["几", "多", "个", "岁"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你....王方什么时候回来吗？——她可能不回来了。", options: ["开始", "知道", "介绍", "游泳"], answer: 1},
+        {q: "Từ '旁边' có nghĩa là gì? ", options: ["Bên trong", "Bên ngoài", "Bên cạnh", "Bên trái"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你不要给张老师打电话，这几天他很……", options: ["忙", "累", "高", "新"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 这块手表是你的吗？——不是，是我……的。", options: ["小狗", "小猫", "同学", "桌子"], answer: 2},
+        {q: "Phủ định của '要' là gì? ", options: ["不要", "没要", "不想", "没想"], answer: 2},
+        {q: "Chọn Pinyin đúng của từ '自行车'", options: ["zìxìngchē", "zìxǐngchè", "zīxíngchē", "zìxíngchē"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 那块手表多少钱买的？——不太贵，两千……块。", options: ["个", "多", "件", "张"], answer: 1},
+        {q: "Từ 'Mới' trong tiếng Trung là: ", options: ["新", "旧", "贵", "心"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我睡觉的......，我妈妈在出去买菜呢。", options: ["时间", "时候", "以前", "以后"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 这是今天早上的报纸吗？——不是，是……的。", options: ["昨天", "明天", "明年", "去年"], answer: 0},
+        {q: "Bộ nào sau đây liên quan đến 'Tre/trúc'? ", options: ["Bộ Ngôn (讠)", "Bộ Nhục (月)", "Bộ Mục (目)", "Bộ Trúc (⺮)"], answer: 3},
+        {q: "Chọn câu trả lời phù hợp cho câu hỏi: 你的公司有多少个人？——......", options: ["五百个多人", "五百多个人", "百五多个人", "百五个多人"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你听，是不是送报纸的来了？——我...。", options: ["看一下", "说一下", "买一下", "写一下"], answer: 0},
+        {q: "Từ nào sau đây có nghĩa là 'Nghỉ ngơi'? ", options: ["睡觉", "起床", "休息", "游泳"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 这是谁的房间？——这是我和我……的。", options: ["丈夫", "小姐", "眼睛", "牛奶"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống：那个......是我在中国买的。", options: ["大了", "我呢", "粉的", "很贵"], answer: 2},
+        {q: "Sắp xếp câu: 不能 / 做饭 / 帮 / 忙 / 现在 / 所以 / 你 / 有点儿 / 我 / 了 / 因为", options: ["因为我忙现在，所以有点儿不能帮你做饭了。", "所以我有点儿现在忙，因为不能帮你做饭了。", "因为现在我有点儿忙，所以不能帮你做饭了。", "因为我有点儿不能做饭，所以现在帮你忙了。"], answer: 2},
+        {q: "'27 đồng hơn' trong tiếng Trung sẽ là:", options: ["二十七多块", "七十二块多", "二十七块多", "七十二多块"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你女儿的房间真漂亮！都是……色的。", options: ["颜", "蓝", "鱼", "笔"], answer: 1},
+        {q: "Chọn từ trái nghĩa với từ '以后' ", options: ["后面", "时候", "已经", "以前"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 昨天晚上我不能睡觉.....下午喝了很多咖啡。", options: ["虽然", "但是", "因为", "所以"], answer: 2},
+        {q: "Từ '时间' có nghĩa là gì? ", options: ["Báo giấy", "Kiểm tra", "Màu sắc", "Thời gian"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 粉色是我女儿最……的颜色。", options: ["喜欢", "高兴", "知道", "觉得"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你看见我的笔吗？——左边那个……的是你的。", options: ["好看", "眼睛", "白色", "颜色"], answer: 2},
+        {q: "Từ '打篮球' có nghĩa là gì? ", options: ["Chơi bóng rổ", "Chơi tennis", "Chơi cầu lông", "Chơi đá bóng"], answer: 0},
+        {q: "Chọn câu trả lời thích hợp cho câu hỏi sau: 你最喜欢什么运动？", options: ["喝牛奶", "吃羊肉", "看报纸", "打篮球"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 生日快乐！这是送给你的！——是一本……吗？", options: ["英文书", "杯子", "手表", "报纸"], answer: 0},
+        {q: "Sắp xếp câu: 了 / 我 / 给 / 打 / 电话 / 就 / 你 / 以后 / 起床 /", options: ["我给你打电话以后就起床了", "我起床以后就给你打电话了", "我打电话以后就给你起床了", "你就起床以后给我打电话了"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 明天你去学开车，......？ ", options: ["好吗", "怎么样", "会不会", "是不是"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 明天.....有你，我.....去。", options: ["只要/就", "只要/但是", "因为/所以", "虽然/ 就是"], answer: 0},
+        {q: "Từ nào sau đây có pinyin là 'Ra/ ra ngoài'? ", options: ["出去", "回来", "出院", "回去"], answer: 0},
+        {q: "Dịch câu sau đây sang tiếng Trung: Đồ ăn Việt ở đây món nào cũng đều ngon.", options: ["这里的越南菜都很好。", "这里的越南菜道道都很好吃。", "越南菜这里个个都很好吃。", "这里的越南菜件件很好吃。"], answer: 1},
+        {q: "Chọn Pinyin đúng của từ '生病'", options: ["shēngbíng", "shēngbing", "shéngbìng", "shēngbìng"], answer: 3}, 
+        {q: "Từ nào sau đây có bộ 'Tử'? ", options: ["说", "孩", "国", "你"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 大卫，你......吧！", options: ["我你等一下", "等一下我", "一下等我", "等我一下"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 这本书是谁写的？——这本书是……写的。", options: ["我老师", "我狗", "我杯子", "我眼睛"], answer: 0},
+        {q: "Tìm lỗi sai của câu sau: 我想最去日本旅游。", options: ["去 phải đứng trước 最", "最 phải đứng trước 想", "Thay từ 旅游 bằng 游泳", "Bỏ từ 去"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 电话是谁打来的？——不知道，电话是妈妈....的。", options: ["送", "接", "给", "来"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你是什么时候开始学汉语的？——我今年开始，已经学了……了。", options: ["四月多", "四个多月", "四多个月", "四月多"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你在这儿工作多长时间了？——已经两年……了。", options: ["岁", "个", "少", "多"], answer: 3},
+        {q: "Từ '介绍' có nghĩa là gì?", options: ["Giới thiệu", "Giúp đỡ", "Quen biết", "Biết"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 这个工作是我姐姐帮我……的。", options: ["送", "帮", "问", "介绍"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 今天天气有点儿冷，我们……衣服吧。", options: ["多卖", "多穿", "穿多", "穿很多"], answer: 1},
+        {q: "‘Cụm tính từ '也不错' trong câu '这个书包也不错啊。' có nghĩa là gì? ", options: ["Cũng tạm", "Cũng không tệ", "Cũng đắt", "Chính xác"], answer: 1},
+        {q: "Dịch cụm 'Hơn 10 năm' sang tiếng Trung ", options: ["十多年", "多十年", "十年多", "年十多"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 听说这家咖啡店的咖啡很好喝——那我们....去这家吧！", options: ["还", "都", "就", "很"], answer: 2},
+        {q: "Từ nào sau đây có nghĩa là 'Sau này/ Sau khi'", options: ["以前", "以后", "时候", "已经"], answer: 1},
+        {q: "Từ '给'thuộc loại từ gì trong câu:'我再给我爸爸打电话' là？", options: ["Động từ", "Danh từ", "Phó từ", "Giới từ"], answer: 3},
+        {q: "Đáp án nào sau đây đúng với pinyin của từ '旅游' ？", options: ["lǔyóu", "lǔyòu", "lǚyóu", "lǘyǒu"], answer: 2},
+        {q: "今天我一下班就要去....女儿了。", options: ["接", "送", "读", "穿"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 这件衣服颜色还....，就是有点儿小。", options: ["难说", "可能", "贵", "可以"], answer: 3},
+        {q: "Từ nào sau đây có nghĩa là 'Dài'？", options: ["大", "长", "高", "少"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 苹果怎么卖？——7块一.......。", options: ["公斤", "米", "公里", "支"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 因为女儿最喜欢吃饺子，所以我们......买一些吧。", options: ["是", "在", "少", "多"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 那家饭馆的羊肉很....", options: ["不错", "可以", "可能", "意思"], answer: 0},
+        {q: "‘一下’ đi kèm với động từ biểu thị ý nghĩa gì?", options: ["Diễn tả số lượng ít", "Diễn tả số lượng không xác định", "Diễn tả hành động diễn ra trong thời gian ngắn hoặc thử làm gì đó", "Diễn tả cảm xúc bất ngờ của người nói"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我现在太累了，想.....。", options: ["起床一下", "问一下", "等一下", "休息一下"], answer: 3},
+        {q: "Sắp xếp câu: 我 / 白的 / 是 / 衣服 / 我朋友 / 给 / 那件 / 买的。", options: ["那件衣服是我朋友给我买的白的。", "那件白的衣服是我朋友给我买的。", "白的衣服那件是我给买我朋友的", "那件衣服白的是我朋友给我买的。"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống：我还....买这个。", options: ["会", "可能", "可以", "要"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 因为今天天气太热了，......他不想出去吃饭，想在家吃。", options: ["所以", "但是", "虽然", "已经"], answer: 0},
+        {q: "‘件’ là lượng từ chỉ sự vật gì sau đây? ", options: ["杯子", "桌子", "车", "衣服"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我们下午一起去踢足球.......——好啊！", options: ["吗", "呢", "吧", "啊"], answer: 2},
+        {q: "Tìm lỗi sai của câu sau đây: 你不要去哪儿？我们一起去。", options: ["Vị trí từ 要", "Vị trí của 一起", "Thay 不 bằng 还", "Thay 要 bằng 可以"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 咖啡喝多了对身体……，别喝太多。", options: ["不好", "好", "不错", "可以"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 今天的鱼很……，你多吃一点吧。", options: ["好玩", "好看", "好听", "好吃"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: _______下雨了，_______我们不去打篮球了。", options: ["因为 / 所以", "怎么 / 因为", "虽然 / 但是", "如果 / 就"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你_______不来呢？是不是忙什么了？", options: ["什么时候", "怎么", "哪儿", "什么"], answer: 1},
+        {q: "Chọn Pinyin đúng của từ '意思'", options: ["yísi", "yìsi", "yīsi", "yǐsi"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 如果不想吃羊肉，就吃点儿_______吧。", options: ["药", "咖啡", "牛奶", "面条"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我的弟弟_______1米7。", options: ["高", "长", "大", "小"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我回了家，外面.....下雨了。", options: ["都", "已经", "就", "比较"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 英语.....这么难学呀？", options: ["什么", "哪儿", "怎么样", "怎么"], answer: 3},
+        {q: "Dịch câu sau sang Tiếng Trung: 'Tôi thường xuyên ra ngoài đi đá bóng vào lúc 5 giờ chiều mỗi ngày.' ", options: ["我每天下午五点最不经常出去踢足球", "我每天下午五点经常出去踢足球", "我经常每天下午五点出去踢足球", "我每天下午五点出去经常踢足球"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我妈妈.....我很好", options: ["还", "跟", "对", "在"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你喜欢游泳_______跑步？", options: ["跟", "或者", "和", "还是"], answer: 3},
+        {q: "Dịch câu sau sang tiếng Trung: 'Mỗi buổi sáng vào lúc 7 giờ tôi thường xuyên đạp xe đạp đến trường.' ", options: ["每天七点上午我经常去学校骑自行车。", "每天上午七点我骑自行车经常去学校。", "上午七点每天我经常开自行车去学校。", "每天上午七点我经常骑自行车去学校。"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我.....看见了她，.....很高兴。 ", options: ["因为/所以", "因为/但是", "一/就", "虽然/但是"], answer: 2},
+        {q: "Tìm lỗi trong câu sau đây: 这块手表不是我爸爸买。", options: ["Lượng từ 块", "Thiếu 的 cuối câu", "Thiếu 的 trước 买", "Dư 是"], answer: 1},
+        {q: "Chọn nghĩa đúng của từ '考试'", options: ["Chuẩn bị", "Vui vẻ", "Vận động", "Kiểm tra"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 这条路_______两百米。", options: ["高", "贵", "长", "多"], answer: 2},
+        {q: "Loại từ của từ '还' là gì? ", options: ["Động từ", "Phó từ", "Danh từ", "Tính từ"], answer: 1},
+        {q: "Sắp xếp câu: 外 / 有 / 人 / 你 / 等 / 门 / 在 ", options: ["外门在有等我人", "门外有人在等你", "外门人在有等你", "门外在有等我人"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống:这本汉语书是_______写的？", options: ["谁", "什么", "哪儿", "怎么"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我觉得小明这个人非常.....", options: ["意思", "好吃", "难听", "有意思"], answer: 3},
+        {q: "Sắp xếp câu: 朋友 / 看 / 一 / 我的 / 时间 / 去 / 有 / 就 / 电影 ", options: ["我的朋友就有时间一去看电影", "我的朋友一去看电影就时间有", "我的朋友一有时间就去看电影", "朋友的我一有电影就去看时间"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我.....知道我们的老师是谁。", options: ["还很", "还没", "还都", "还在"], answer: 1},
+        {q: "Dịch câu sau đây sang tiếng Trung: '我对散步非常感兴趣。' ", options: ["Tôi vô cùng hứng thú với việc đi bộ", "Việc đi bộ vô cùng có ý nghĩa", "Tôi không hề thích đi bộ", "Tôi không có hứng thú với việc đi bộ nhất"], answer: 0},
+        {q: "Tìm lỗi sai ngữ pháp câu sau đây：听说这里的中国菜很好吃，就是贵有点儿。", options: ["Vị trí của 听说", "Vị trí của 这里", "Vị trí của 有点儿", "Vị trí của 就是"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你是什么时候开始学汉语_______？", options: ["的", "了", "呢", "吗"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 这个黄色的书包是______。", options: ["都新", "新了", "和新", "最新的"], answer: 3},
+        {q: "Sắp xếp câu: 她们 / 十几 / 个 / 苹果 / 有 / ", options: ["她们个有十几苹果。", "她们有苹果十几个。", "她们有十几个苹果。", "十几个苹果她们有。"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 这件衣服有点儿大，请问你有小_______吗？", options: ["了", "的", "呢", "吧"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 喂，你_______上飞机了吗？", options: ["时间", "开始", "开车", "生日"], answer: 1},
+        {q: "'怎么' đồng nghĩa với từ nào sau đây dùng để hỏi nguyên nhân：", options: ["谁", "什么时候", "哪儿", "为什么"], answer: 3},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 丽丽每天下午....去游泳：", options: ["还", "都", "很", "太"], answer: 1},
+        {q: "Cấu trúc '对.....有兴趣/ 感兴趣' có nghĩa là gì? ", options: ["Có hứng thú với....", "Không thích....", "Ghét......", "Cảm thấy.... có ý nghĩa"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống：这件蓝色的衣服很好看，_______很便宜。", options: ["都", "不", "也", "就"], answer: 2},
+        {q: "Từ '真' trong '真高' là loại từ gì và có ý nghĩa như thế nào？", options: ["Phó từ - biểu thị cảm xúc", "Động từ - Biểu thị hành động", "Danh từ - Biểu thị chỉ người", "Tính từ - Biểu thị tính chất"], answer: 0},
+        {q: "Từ nào sau đây có nghĩa là 'sữa bò'？", options: ["咖啡", "牛奶", "茶", "水"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 大卫_______在出去运动呢，他还在家看书。", options: ["已经", "没", "不", "还"], answer: 1},
+        {q: "Từ '绿色' có nghĩa là gì？", options: ["Màu sắc", "Màu xanh dương", "Màu xanh lá", "Màu tím"], answer: 2},
+        {q: "Dịch cụm sau đây sang tiếng Trung 'Hơn 30 cái bàn'", options: ["三十几张桌子", "三十个多张桌子", "三十多件桌子", "三十几件桌子"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你去过中国了吗？—— 我.....去过两次了。", options: ["现在", "正在", "已经", "就是"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 你_______了吗？我在在外面等你呢。", options: ["出去", "回来", "回去", "出来"], answer: 3},
+        {q: "Từ '开始' có nghĩa là gì？", options: ["Bắt đầu", "Kết thúc", "Cuộc thi", "Lái xe"], answer: 0},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 我家里的人_______都很喜欢吃面条。", options: ["个个", "条条", "台台", "本本"], answer: 0},
+        {q: "Chọn pinyin đúng của từ '打篮球'？", options: ["dǎlánqiú", "dálánqiú", "dǎlànqiú", "dālànqiú"], answer: 0},
+        {q: "Từ '每' có nghĩa là gì？", options: ["Khi", "Mỗi, một", "Cái", "Xe"], answer: 1},
+        {q: "Tìm lỗi sai của câu sau đây: 我觉得这个咖啡店的奶茶不太好喝了。", options: ["Vị trí của từ 觉得", "Sai cấu trúc 不太...了", "Cần thay 觉得 bằng 要", "Cần thay 不太 bằng 都"], answer: 1},
+        {q: "'医生' thường làm việc ở đâu？", options: ["饭馆", "学校", "医院", "机场"], answer: 2},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 他_______不喜欢去医院看医生。", options: ["已经", "也", "和", "还是"], answer: 1},
+        {q: "Chọn từ thích hợp điền vào chỗ trống: 她们_______我不好。", options: ["和", "对", "跟", "是"], answer: 1},
+        {q: "Bộ nào sau đây liên quan tới 'Bệnh tật, đau ốm'? ", options: ["Bộ Phụ-阝", "Bộ Đao-刂", "Bộ Nghiễm-广", "Bộ Nạch-疒"], answer: 3},
+        {q: "Từ '生日' có nghĩa là gì? ", options: ["Bên trong", "Sinh nhật", "Chuẩn bị", "Bánh kem"], answer: 1},
+        {q: "Từ '丈夫' có nghĩa là gì? ", options: ["Con trai", "Con gái", "Vợ", "Chồng"], answer: 3},
+        {q: "Từ nào sau đây có nghĩa là 'Màu sắc'？", options: ["开车", "跑步", "颜色", "红色"], answer: 2},
+        {q: "Cấu trúc nào sau đây thường được dùng trong câu để chỉ quan hệ 'Nguyên nhân/ Kết quả'？", options: ["虽然/但是", "因为/所以", "一/就", "只要/就"], answer: 1},
+        {q: "Chọn pinyin đúng của từ '机场'：", options: ["jíchǎng", "jīchàng", "jīcháng", "jīchǎng"], answer: 3},
+        {q: "Tìm lỗi sai của câu sau đây:这个椅子不她给我送的。 ", options: ["Cần thay 不 bằng 没", "Cần bỏ 不", "Cần thêm 是 sau phó từ 不", "Sai vị trí động từ 送"], answer: 2},
+        {q: "Từ nào sau đây có nghĩa là 'Bơi lội'？", options: ["旅行", "旅游", "游泳", "起床"], answer: 2},
+        {q: "Từ '来' trong câu sau có nghĩa là gì '先生，您想喝什么？—— 我来一杯咖啡吧'？", options: ["Lấy, muốn", "Đến", "Đi", "Thử"], answer: 0},
+        {q: "Từ nào sau đây có nghĩa là 'Giúp đỡ'？", options: ["眼睛", "旅游", "帮助", "起床"], answer: 2},
+        {q: "Sắp xếp câu: 本 / 有 / 十几 / 我 / 朋友 / 书 / ", options: ["我朋友十几有本书", "朋友我有十几本书", "本书十几有我朋友", "我朋友有十几本书"], answer: 2}
+    ];
+
+    let currentQuiz = [];
+    let currentIndex = 0;
+    let score = 0;
+    let selectedOption = null;
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionText = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options-container");
+    const nextBtn = document.getElementById("next-btn");
+    const questionTracker = document.getElementById("question-tracker");
+    const scoreTracker = document.getElementById("score-tracker");
+    const finalScore = document.getElementById("final-score");
+    const resultMessage = document.getElementById("result-message");
+
+    function startQuiz() {
+        startScreen.style.display = "none";
+        resultScreen.style.display = "none";
+        quizScreen.style.display = "block";
+        currentIndex = 0;
+        score = 0;
+        
+        // Trộn ngẫu nhiên và cắt ra đúng 20 câu không lặp lại trong lượt chơi
+        currentQuiz = [...fullBank].sort(() => 0.5 - Math.random()).slice(0, 20);
+        loadQuestion();
+    }
+
+    function resetToStart() {
+        resultScreen.style.display = "none";
+        startScreen.style.display = "block";
+    }
+
+    function loadQuestion() {
+        selectedOption = null;
+        nextBtn.disabled = true;
+        nextBtn.innerText = "Vui lòng chọn đáp án";
+
+        const currentQ = currentQuiz[currentIndex];
+        questionTracker.innerText = `Câu hỏi: ${currentIndex + 1} / 20`;
+        scoreTracker.innerText = `Điểm: ${score}`;
+        questionText.innerText = currentQ.q;
+
+        optionsContainer.innerHTML = "";
+        
+        // Xáo trộn vị trí các đáp án A, B, C, D
+        let optionsWithIndex = currentQ.options.map((opt, idx) => ({ opt, originalIdx: idx }));
+        optionsWithIndex.sort(() => 0.5 - Math.random());
+
+        optionsWithIndex.forEach((item) => {
+            const li = document.createElement("li");
+            li.classList.add("option-item");
+            li.innerText = item.opt;
+            li.onclick = () => selectOption(li, item.originalIdx === currentQ.answer);
+            optionsContainer.appendChild(li);
+        });
+    }
+
+    function selectOption(element, isCorrect) {
+        if (selectedOption !== null) return;
+        selectedOption = isCorrect;
+
+        const options = optionsContainer.children;
+        for (let opt of options) {
+            opt.style.pointerEvents = "none";
+        }
+
+        if (isCorrect) {
+            element.classList.add("correct");
+            playSound('correct');
+            score++;
+            scoreTracker.innerText = `Điểm: ${score}`;
+        } else {
+            element.classList.add("incorrect");
+            playSound('incorrect');
+            for (let opt of options) {
+                if (opt.innerText === currentQuiz[currentIndex].options[currentQuiz[currentIndex].answer]) {
+                    opt.classList.add("correct");
+                }
+            }
+        }
+
+        nextBtn.disabled = false;
+        nextBtn.innerText = currentIndex === currentQuiz.length - 1 ? "Xem kết quả 🏁" : "Câu tiếp theo 👉";
+    }
+
+    nextBtn.onclick = function() {
+        currentIndex++;
+        if (currentIndex < currentQuiz.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    };
+
+    function showResult() {
+        quizScreen.style.display = "none";
+        resultScreen.style.display = "block";
+        finalScore.innerText = `${score}/20`;
+
+        let msg = "";
+        if (score === 20) {
+            msg = "🌟 Xuất sắc tuyệt đối! Học viên nắm vững hoàn hảo từ vựng và ngữ pháp HSK 2.";
+        } else if (score >= 15) {
+            msg = "👍 Kết quả rất tốt! Nền tảng HSK 2 của bạn cực kỳ vững chắc.";
+        } else if (score >= 10) {
+            msg = "💡 Kết quả khá! Hãy ôn lại thêm một số điểm ngữ pháp và từ vựng nhé.";
+        } else {
+            msg = "📚 Cần cố gắng ôn tập thêm các bài khóa và từ vựng nhé!";
+        }
+        resultMessage.innerText = msg;
+    }
+</script>
+
+</body>
+</html>
